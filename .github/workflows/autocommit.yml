@@ -1,0 +1,29 @@
+name: Auto Commit Demo
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '*/5 * * * *'  # chạy mỗi 5 phút
+  workflow_dispatch:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Update index.html
+        run: |
+          echo "<!DOCTYPE html><html><body><h1>Hello World 👋</h1><p>Last updated at $(date)</p></body></html>" > index.html
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Auto update at $(date)" || echo "No changes to commit"
+          git push
