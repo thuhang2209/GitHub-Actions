@@ -1,0 +1,25 @@
+name: Auto Commit Demo
+
+on:
+  workflow_dispatch:  # cho phép chạy thủ công từ tab Actions
+  schedule:
+    - cron: '*/5 * * * *'  # tự động chạy mỗi 5 phút (demo thôi, có thể tắt)
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Update HTML file
+        run: |
+          echo "<!DOCTYPE html><html><body><h1>Hello World $(date)</h1></body></html>" > index.html
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Auto update Hello World at $(date)" || echo "No changes to commit"
+          git push
